@@ -25,10 +25,17 @@ export const authService = {
   createClass: (data: { name: string }) =>
     apiClient.post("/class/create-class", data),
   getClassById: (id: string) => apiClient.get(`/class/${id}`),
-  getStudents: () => apiClient.get("/admin/students"),
+  getStudents: () => apiClient.get("/students"),
+  getStudentById: (id: string) => apiClient.get(`/students/${id}`),
+  createStudent: (data: { name: string; classId: string }) =>
+    apiClient.post("/students/create-student", data),
+  getAttendances: () => apiClient.get("/attendance"),
+  getAttendanceById: (id: string) => apiClient.get(`/attendance/${id}`),
+  takeAttendance: (data: { studentId: string; status: string; date: string }) => 
+    apiClient.post("/attendance/take-attendance", data),
 };
 
-export const studentService = {
-  getAll: () => apiClient.get("/students"),
-  getById: (id: string) => apiClient.get(`/students/${id}`),
-};
+// export const studentService = {
+//   getAll: () => apiClient.get("/students"),
+//   getById: (id: string) => apiClient.get(`/students/${id}`),
+// };
