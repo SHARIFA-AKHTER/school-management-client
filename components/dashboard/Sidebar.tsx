@@ -10,7 +10,9 @@ import {
   ClipboardCheck, 
   GraduationCap, 
   Settings,
-  UserCircle
+  UserCircle,
+  School,
+  LogOut
 } from "lucide-react";
 
 const routes = [
@@ -27,10 +29,16 @@ const routes = [
     roles: ["ADMIN"],
   },
   {
+    label: "Classes",
+    icon: School, 
+    href: "/admin/classes",
+    roles: ["ADMIN"],
+  },
+  {
     label: "Students",
     icon: Users,
     href: "/admin/students",
-    roles: ["ADMIN"],
+    roles: ["ADMIN", "TEACHER"],
   },
   {
     label: "Attendance",
@@ -47,7 +55,7 @@ const routes = [
   {
     label: "Results",
     icon: GraduationCap,
-    href: "/teacher/results",
+    href: "/results",
     roles: ["TEACHER", "ADMIN", "STUDENT"],
   },
 ];
@@ -56,47 +64,65 @@ export const Sidebar = ({ userRole }: { userRole: string }) => {
   const pathname = usePathname();
 
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
-      <div className="px-3 py-2 flex-1">
-        <Link href="/dashboard" className="flex items-center pl-3 mb-14">
-          <div className="relative w-8 h-8 mr-4">
-          
-             <div className="bg-blue-500 w-full h-full rounded-lg flex items-center justify-center font-bold">S</div>
+    <div className="flex flex-col h-full bg-[#0f172a] text-slate-300 border-r border-slate-800">
+      {/* Logo Section */}
+      <div className="px-6 py-8 flex items-center">
+        <Link href="/dashboard" className="flex items-center gap-x-3">
+          <div className="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-500/20">
+            <School className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-xl font-bold">SchoolPro</h1>
+          <h1 className="text-xl font-bold tracking-tight text-white">
+            School<span className="text-indigo-400">Pro</span>
+          </h1>
         </Link>
-        
-        <div className="space-y-1">
-          {routes
-            .filter((route) => route.roles.includes(userRole)) 
-            .map((route) => (
+      </div>
+
+      {/* Navigation Routes */}
+      <div className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+        {routes
+          .filter((route) => route.roles.includes(userRole))
+          .map((route) => {
+            const isActive = pathname === route.href;
+            return (
               <Link
                 key={route.href}
                 href={route.href}
                 className={cn(
-                  "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                  pathname === route.href ? "text-white bg-white/10" : "text-zinc-400"
+                  "group flex items-center gap-x-3 text-sm font-medium px-4 py-3 rounded-xl transition-all duration-200 ease-in-out",
+                  isActive 
+                    ? "bg-indigo-600/10 text-indigo-400 border-r-4 border-indigo-500" 
+                    : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50"
                 )}
               >
-                <div className="flex items-center flex-1">
-                  <route.icon className={cn("h-5 w-5 mr-3", pathname === route.href ? "text-blue-500" : "text-zinc-400")} />
-                  {route.label}
-                </div>
+                <route.icon 
+                  className={cn(
+                    "h-5 w-5 shrink-0 transition-colors",
+                    isActive ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300"
+                  )} 
+                />
+                {route.label}
               </Link>
-            ))}
-        </div>
+            );
+          })}
       </div>
 
-      <div className="px-3 py-2 border-t border-zinc-800">
+      {/* Bottom Actions */}
+      <div className="p-4 mt-auto border-t border-slate-800/50 space-y-1">
         <Link
           href="/settings"
-          className="text-sm group flex p-3 w-full justify-start font-medium cursor-pointer text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition"
+          className="group flex items-center gap-x-3 text-sm font-medium px-4 py-3 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all"
         >
-          <div className="flex items-center flex-1">
-            <Settings className="h-5 w-5 mr-3 text-zinc-400" />
-            Settings
-          </div>
+          <Settings className="h-5 w-5 text-slate-500 group-hover:text-slate-300" />
+          Settings
         </Link>
+        
+        <button
+          className="w-full group flex items-center gap-x-3 text-sm font-medium px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/10 transition-all"
+          onClick={() => {/* add logout logic */}}
+        >
+          <LogOut className="h-5 w-5" />
+          Logout
+        </button>
       </div>
     </div>
   );
