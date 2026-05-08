@@ -1,34 +1,58 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
-import { GraduationCap, Users, BookOpen, Loader2, Plus } from "lucide-react";
+import Link from "next/link";
+import { GraduationCap, Loader2, Plus, X } from "lucide-react";
 import { authService } from "@/app/services/api.service";
 
-export default function ClassesPage() {
+export default function ClassesListPage() {
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newClassName, setNewClassName] = useState("");
+  const [createLoading, setCreateLoading] = useState(false);
+
+  const fetchClasses = async () => {
+    try {
+      setLoading(true);
+      const res = await authService.getClasses();
+      setClasses(res.data.data || []);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-
-        const res = await authService.getClasses(); 
-        console.log("Classes Data:", res.data);
-        
-   
-        setClasses(res.data.data || []);
-      } catch (error) {
-        console.error("Error fetching classes:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchClasses();
   }, []);
 
-  if (loading) {
+  const handleCreateClass = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClassName.trim()) return;
+
+    try {
+      setCreateLoading(true);
+   
+      await authService.createClass({ name: newClassName });
+      
+      setNewClassName("");
+      setIsModalOpen(false);
+      await fetchClasses(); 
+      alert("Class created successfully!");
+    } catch (error: any) {
+      console.error("Create class error:", error);
+      alert(error.response?.data?.message || "Failed to create class");
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  if (loading && classes.length === 0) {
     return (
       <div className="h-[60vh] flex items-center justify-center">
         <Loader2 className="animate-spin text-[#5D4291]" size={40} />
@@ -37,81 +61,103 @@ export default function ClassesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header Section */}
+    <div className="space-y-6 relative">
+      {/* Header */}
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Classes Management</h1>
-          <p className="text-sm text-gray-500">Manage school classes and view student/subject stats.</p>
-        </div>
-        <button className="bg-[#5D4291] text-white px-5 py-2.5 rounded-2xl flex items-center gap-2 font-semibold hover:bg-[#4a3475] transition-all shadow-lg shadow-purple-100">
-          <Plus size={20} /> Add New Class
+        <h1 className="text-2xl font-bold text-gray-800">Classes</h1>
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-[#5D4291] text-white px-5 py-2.5 rounded-2xl flex items-center gap-2 font-semibold hover:bg-[#4a3475] transition-all shadow-lg shadow-purple-100"
+        >
+          <Plus size={20} /> Create Class
         </button>
       </div>
 
-      {/* Stats Cards (Optional) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-[30px] border border-gray-100 shadow-sm flex items-center gap-4">
-          <div className="bg-purple-100 p-4 rounded-2xl text-[#5D4291]">
-            <GraduationCap size={24} />
-          </div>
-          <div>
-            <p className="text-gray-500 text-sm font-medium">Total Classes</p>
-            <p className="text-2xl font-bold text-gray-800">{classes.length}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Classes Table */}
+      {/* Table Section */}
       <div className="bg-white rounded-[35px] border border-gray-100 shadow-sm overflow-hidden">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full text-left">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-8 py-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Class Name</th>
-              <th className="px-8 py-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Total Students</th>
-              <th className="px-8 py-5 text-xs font-bold text-gray-500 uppercase tracking-wider">Subjects</th>
-              <th className="px-8 py-5 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Action</th>
+              <th className="px-8 py-5 text-xs font-bold text-gray-500 uppercase">Class Name</th>
+              <th className="px-8 py-5 text-xs font-bold text-gray-500 uppercase">Students</th>
+              <th className="px-8 py-5 text-xs font-bold text-gray-500 uppercase text-right">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {classes.map((cls) => (
-              <tr key={cls.id} className="hover:bg-purple-50/30 transition-colors group">
-                <td className="px-8 py-5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-[#5D4291] font-bold">
-                      {cls.name.substring(0, 2)}
-                    </div>
-                    <span className="font-bold text-gray-700">{cls.name}</span>
+              <tr key={cls.id} className="hover:bg-purple-50/30 transition-colors">
+                <td className="px-8 py-5 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-[#5D4291]">
+                    <GraduationCap size={20} />
                   </div>
+                  <span className="font-bold text-gray-700">{cls.name}</span>
                 </td>
-                <td className="px-8 py-5">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Users size={16} className="text-gray-400" />
-                    <span className="font-medium">{cls.students?.length || 0} Students</span>
-                  </div>
-                </td>
-                <td className="px-8 py-5">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <BookOpen size={16} className="text-gray-400" />
-                    <span className="font-medium">{cls.subjects?.length || 0} Subjects</span>
-                  </div>
+                <td className="px-8 py-5 text-gray-600 font-medium">
+                  {cls.students?.length || 0} Students
                 </td>
                 <td className="px-8 py-5 text-right">
-                  <button className="text-[#5D4291] font-bold text-sm hover:underline">
+                  <Link 
+                    href={`/admin/classes/${cls.id}`} 
+                    className="text-[#5D4291] font-bold text-sm hover:underline"
+                  >
                     View Details
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        
-        {classes.length === 0 && (
-          <div className="p-10 text-center text-gray-500">
-            No classes found. Start by adding one!
-          </div>
+        {classes.length === 0 && !loading && (
+          <div className="p-10 text-center text-gray-400">No classes found. Create your first class!</div>
         )}
       </div>
+
+      {/* Create Class Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md rounded-[40px] p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            {/* Close Button */}
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="absolute right-6 top-6 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X size={24} />
+            </button>
+            
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Create New Class</h2>
+            
+            <form onSubmit={handleCreateClass} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-500 uppercase ml-1">Class Name</label>
+                <input 
+                  autoFocus
+                  type="text"
+                  value={newClassName}
+                  onChange={(e) => setNewClassName(e.target.value)}
+                  placeholder="e.g. Class 10" 
+                  className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-sm transition-all"
+                  required
+                />
+              </div>
+
+              <button 
+                disabled={createLoading}
+                type="submit"
+                className="w-full bg-[#5D4291] text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-[#4a3475] disabled:opacity-70 transition-all active:scale-[0.98]"
+              >
+                {createLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    Creating...
+                  </>
+                ) : (
+                  "Create Class Now"
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

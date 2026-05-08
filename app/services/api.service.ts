@@ -21,7 +21,7 @@ export const authService = {
   login: (data: any) => apiClient.post("/auth/login", data),
   register: (data: any) => apiClient.post("/auth/register", data),
 
-  getClasses: () => apiClient.get("/admin/class"),
+  getClasses: () => apiClient.get("/class"),
   createClass: (data: { name: string }) =>
     apiClient.post("/class/create-class", data),
   getClassById: (id: string) => apiClient.get(`/class/${id}`),
