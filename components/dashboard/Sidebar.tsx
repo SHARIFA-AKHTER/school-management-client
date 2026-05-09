@@ -16,12 +16,12 @@ import {
 } from "lucide-react";
 
 const routes = [
-  {
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    href: "/dashboard",
-    roles: ["ADMIN", "TEACHER", "STUDENT"],
-  },
+  // {
+  //   label: "Dashboard",
+  //   icon: LayoutDashboard,
+  //   href: "/dashboard",
+  //   roles: ["ADMIN", "TEACHER", "STUDENT"],
+  // },
   {
     label: "User Management",
     icon: UserCircle,

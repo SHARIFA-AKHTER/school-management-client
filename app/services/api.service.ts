@@ -8,8 +8,16 @@ const apiClient = axios.create({
   },
 });
 
+// apiClient.interceptors.request.use((config) => {
+//   const token = localStorage.getItem("token");
+//   if (token) {
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
+//   return config;
+// });
+
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -20,6 +28,7 @@ apiClient.interceptors.request.use((config) => {
 export const authService = {
   login: (data: any) => apiClient.post("/auth/login", data),
   register: (data: any) => apiClient.post("/auth/register", data),
+  googleLogin: (data: { token: string }) => apiClient.post("/auth/google-login", data),
 
   getClasses: () => apiClient.get("/class"),
   createClass: (data: { name: string }) =>
@@ -43,7 +52,3 @@ export const authService = {
     apiClient.post("/results/add-result", data),
 };
 
-// export const studentService = {
-//   getAll: () => apiClient.get("/students"),
-//   getById: (id: string) => apiClient.get(`/students/${id}`),
-// };
