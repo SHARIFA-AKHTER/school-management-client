@@ -33,6 +33,14 @@ export const authService = {
   getAttendanceById: (id: string) => apiClient.get(`/attendance/${id}`),
   takeAttendance: (data: { studentId: string; status: string; date: string }) => 
     apiClient.post("/attendance/take-attendance", data),
+  getSubjects: () => apiClient.get("/subjects"),
+  getSubjectById: (id: string) => apiClient.get(`/subjects/${id}`),
+  createSubject: (data: { name: string; classId: string }) => 
+    apiClient.post("/subjects/create-subject", data),
+  getResults: () => apiClient.get("/results"),
+  getResultById: (id: string) => apiClient.get(`/results/${id}`),
+  addResult: (data: { studentId: string; subject: string; marks: number }) => 
+    apiClient.post("/results/add-result", data),
 };
 
 // export const studentService = {

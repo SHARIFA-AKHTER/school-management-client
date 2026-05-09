@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { 
   LayoutDashboard, 
@@ -62,6 +62,17 @@ const routes = [
 
 export const Sidebar = ({ userRole }: { userRole: string }) => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const onLogout = () => {
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user"); 
+    
+    router.push("/login");
+    
+    router.refresh();
+  };
 
   return (
     <div className="flex flex-col h-full bg-[#0f172a] text-slate-300 border-r border-slate-800">
@@ -116,9 +127,9 @@ export const Sidebar = ({ userRole }: { userRole: string }) => {
           Settings
         </Link>
         
-        <button
+       <button
           className="w-full group flex items-center gap-x-3 text-sm font-medium px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/10 transition-all"
-          onClick={() => {/* add logout logic */}}
+          onClick={onLogout}
         >
           <LogOut className="h-5 w-5" />
           Logout
