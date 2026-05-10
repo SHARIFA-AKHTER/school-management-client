@@ -2,7 +2,7 @@
 
 SchoolPortal is a high-end, responsive, and feature-rich **SaaS Dashboard** application. It is designed to streamline administrative tasks, manage student records, and provide a seamless experience for educators and administrators.
 
-![SchoolPortal Preview](https://your-preview-link.com/screenshot.png) ## ✨ Key Features
+![SchoolPortal Preview](https://i.ibb.co.com/84t2j16W/School-Management-System-05-10-2026-12-58-PM.png) ## ✨ Key Features
 
 * **Advanced Dashboard:** At-a-glance statistics for students, teachers, and performance metrics.
 * **Dual Authentication:** Secure login via Email/Password and **Google One-Tap/Identity Services**.
@@ -13,7 +13,7 @@ SchoolPortal is a high-end, responsive, and feature-rich **SaaS Dashboard** appl
 
 ## 🚀 Tech Stack
 
-* **Framework:** [Next.js 14+](https://nextjs.org/) (App Router)
+* **Framework:** [Next.js 16+](https://nextjs.org/) (App Router)
 * **Language:** [TypeScript](https://www.typescriptlang.org/)
 * **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 * **Icons:** [Lucide React](https://lucide.dev/)
@@ -31,11 +31,10 @@ npm install
 Configure Environment Variables:
 Create a .env.local file in the root directory and add the following:
 
-Code snippet
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id_here
 NEXT_PUBLIC_API_URL=your_api_backend_url
-Run the development server:
 
+Run the development server:
 npm run dev
 Open http://localhost:3000 in your browser to see the result.
 
