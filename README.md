@@ -48,6 +48,9 @@ Open http://localhost:3000 in your browser to see the result.
 │   └── layout.tsx       # Root layout with global providers
 ├── public/              # Static assets (images, icons)
 └── tailwind.config.ts   # Custom theme and styling configurations
+
+Live URL: [https://school-management-client.vercel.app/]
+
 👩‍💻 Developed By
 Sharifa Akhter AI SaaS Specialist | Full Stack Developer
 
