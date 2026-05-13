@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {  Loader2, Plus, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { authService } from "@/app/services/api.service";
 
 export default function StudentsListPage() {
@@ -53,46 +53,50 @@ export default function StudentsListPage() {
   };
 
   if (loading && students.length === 0) {
-    return <div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-[#5D4291]" size={40} /></div>;
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <Loader2 className="animate-spin text-[#5D4291] dark:text-purple-400" size={40} />
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 transition-colors duration-300">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Students Management</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Students Management</h1>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#5D4291] text-white px-5 py-2.5 rounded-2xl flex items-center gap-2 font-semibold shadow-lg shadow-purple-100"
+          className="bg-[#5D4291] dark:bg-purple-600 text-white px-5 py-2.5 rounded-2xl flex items-center gap-2 font-semibold shadow-lg shadow-purple-100 dark:shadow-none hover:bg-[#4a3475] dark:hover:bg-purple-700 transition-all"
         >
           <Plus size={20} /> Add Student
         </button>
       </div>
 
-      <div className="bg-white rounded-[35px] border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-[35px] border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-gray-50 text-xs font-bold text-gray-500 uppercase">
+          <thead className="bg-gray-50 dark:bg-slate-800/50 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
             <tr>
               <th className="px-8 py-5">Student Name</th>
               <th className="px-8 py-5">Class</th>
               <th className="px-8 py-5 text-right">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
             {students.map((student) => (
-              <tr key={student.id} className="hover:bg-purple-50/30 transition-colors">
+              <tr key={student.id} className="hover:bg-purple-50/30 dark:hover:bg-purple-900/10 transition-colors">
                 <td className="px-8 py-5 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-[#5D4291] font-bold uppercase">
+                  <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-[#5D4291] dark:text-purple-400 font-bold uppercase">
                     {student.name.charAt(0)}
                   </div>
-                  <span className="font-bold text-gray-700">{student.name}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-200">{student.name}</span>
                 </td>
                 <td className="px-8 py-5">
-                  <span className="px-3 py-1 bg-purple-100 text-[#5D4291] rounded-lg text-xs font-bold">
+                  <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/40 text-[#5D4291] dark:text-purple-300 rounded-lg text-xs font-bold">
                     {student.class?.name || "No Class"}
                   </span>
                 </td>
                 <td className="px-8 py-5 text-right">
-                  <Link href={`/admin/students/${student.id}`} className="text-[#5D4291] font-bold text-sm hover:underline">
+                  <Link href={`/admin/students/${student.id}`} className="text-[#5D4291] dark:text-purple-400 font-bold text-sm hover:underline">
                     View Profile
                   </Link>
                 </td>
@@ -100,39 +104,48 @@ export default function StudentsListPage() {
             ))}
           </tbody>
         </table>
+        {students.length === 0 && !loading && (
+          <div className="p-10 text-center text-gray-400 dark:text-gray-500">No students found.</div>
+        )}
       </div>
 
-      {/* Create Student Modal */}
+      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md rounded-[40px] p-8 shadow-2xl relative">
-            <button onClick={() => setIsModalOpen(false)} className="absolute right-6 top-6 text-gray-400 hover:text-gray-600"><X size={24} /></button>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Add New Student</h2>
+        <div className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[40px] p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button onClick={() => setIsModalOpen(false)} className="absolute right-6 top-6 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              <X size={24} />
+            </button>
+            
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Add New Student</h2>
+            
             <form onSubmit={handleCreateStudent} className="space-y-5">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-400 uppercase ml-1">Full Name</label>
+                <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase ml-1">Full Name</label>
                 <input 
                   type="text" 
                   required
                   placeholder="Enter student name"
-                  className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-sm"
+                  className="w-full px-5 py-4 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-sm dark:text-white"
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-400 uppercase ml-1">Assign Class</label>
+                <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase ml-1">Assign Class</label>
                 <select 
                   required
-                  className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-sm appearance-none"
+                  className="w-full px-5 py-4 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-sm appearance-none dark:text-white"
                   onChange={(e) => setFormData({...formData, classId: e.target.value})}
                 >
-                  <option value="">Select Class</option>
-                  {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  <option value="" className="dark:bg-slate-900">Select Class</option>
+                  {classes.map((c) => (
+                    <option key={c.id} value={c.id} className="dark:bg-slate-900">{c.name}</option>
+                  ))}
                 </select>
               </div>
               <button 
                 disabled={createLoading}
-                className="w-full bg-[#5D4291] text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-[#4a3475] disabled:opacity-70 transition-all"
+                className="w-full bg-[#5D4291] dark:bg-purple-600 text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-[#4a3475] dark:hover:bg-purple-700 disabled:opacity-70 transition-all"
               >
                 {createLoading ? <Loader2 className="animate-spin" size={20} /> : "Save Student"}
               </button>
