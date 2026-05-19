@@ -11,7 +11,8 @@ import {
   Settings,
   UserCircle,
   School,
-  LogOut
+  LogOut,
+  Calendar
 } from "lucide-react";
 
 const routes = [
@@ -56,6 +57,12 @@ const routes = [
     icon: GraduationCap,
     href: "/results",
     roles: ["TEACHER", "ADMIN", "STUDENT"],
+  },
+  {
+    label: "Exams",                        
+    icon: Calendar,
+    href: "/exams",
+    roles: ["ADMIN", "TEACHER", "STUDENT"],  
   },
 ];
 
