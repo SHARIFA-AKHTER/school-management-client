@@ -56,5 +56,12 @@ export const authService = {
   
   createExam: (data: { title: string; examDate: string; feeAmount: number }): Promise<any> => 
     apiClient.post("/exams/create-exam", data),
+  // SSLCOMMERZ PAYMENT SECURE MANAGEMENT SYSTEMS ENDPOINTS
+  // =========================================================================
+  getPayments: (): Promise<any> => apiClient.get("/payments"),
+  //new online payment initiation endpoint for SSLCommerz session deployment
+  initiatePayment: (data: { amount: number; purpose: string; studentId: string }): Promise<any> => 
+    apiClient.post("/payments/initiate", data),
+
 };
 

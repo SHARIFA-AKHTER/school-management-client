@@ -12,7 +12,8 @@ import {
   UserCircle,
   School,
   LogOut,
-  Calendar
+  Calendar,
+  CreditCard
 } from "lucide-react";
 
 const routes = [
@@ -64,6 +65,12 @@ const routes = [
     href: "/exams",
     roles: ["ADMIN", "TEACHER", "STUDENT"],  
   },
+  {
+    label: "Payments",                        
+    icon: CreditCard, 
+    href: "/payments",
+    roles: ["ADMIN", "TEACHER", "STUDENT"],  
+  }
 ];
 
 export const Sidebar = ({ userRole }: { userRole: string }) => {
