@@ -48,7 +48,7 @@ export const authService = {
     apiClient.post("/subjects/create-subject", data),
   getResults: () => apiClient.get("/results"),
   getResultById: (id: string) => apiClient.get(`/results/${id}`),
-  addResult: (data: { studentId: string; subject: string; marks: number }) => 
+  addResult: (data: { studentId: string; subjectId: string; marks: number; examId?: string | null }) => 
     apiClient.post("/results/add-result", data),
 
   getExams: (): Promise<any> => apiClient.get("/exams"),

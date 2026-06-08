@@ -1,8 +1,12 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
 import { authService } from "@/app/services/api.service";
+import { useState, useEffect } from "react";
+// এখানে নিশ্চিত হয়ে নিন আপনার এপিআই সার্ভিস অবজেক্টের নাম কী (apiService নাকি authService)
+// আগের ফাইল অনুযায়ী এটি apiService হওয়ার কথা
+
 import { toast } from "react-hot-toast";
+
 
 export const usePayments = () => {
   const [payments, setPayments] = useState<any[]>([]);
@@ -16,23 +20,27 @@ export const usePayments = () => {
     studentId: "",
   });
 
+  // ১. হিস্ট্রি লেজার ডাটা ফেচিং ফাংশন
   const fetchPayments = async () => {
     try {
       setLoading(true);
+      // এখানে apiService কল করা হলো
       const response: any = await authService.getPayments();
-      // ব্যাকএন্ড যদি ডিরেক্ট অ্যারে অথবা অবজেক্টের ভেতর ডেটা পাঠায় তার সেফটি হ্যান্ডেলিং
-      if (response?.data?.success) {
-        setPayments(response.data.data || []);
+      
+      // পোস্টম্যান রেসপন্স স্ট্রাকচার (response.data.data) অনুযায়ী কন্ডিশন ফিক্সড
+      if (response?.data?.success && Array.isArray(response?.data?.data)) {
+        setPayments(response.data.data);
       } else if (Array.isArray(response?.data)) {
         setPayments(response.data);
       }
-    } catch {
+    } catch (error) {
       toast.error("Failed to load historical database ledgers");
     } finally {
       setLoading(false);
     }
   };
 
+  // ২. পেমেন্ট ইনিশিয়েট ও রিডাইরেকশন হ্যান্ডলার
   const handleCreatePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     const { amount, purpose, studentId } = formData;
@@ -44,17 +52,21 @@ export const usePayments = () => {
     try {
       setSubmitting(true);
       
-      // ব্যাকএন্ড Zod Schema ভ্যালিডেশনের সাথে হুবহু মিল রেখে ডেটা পাঠানো হচ্ছে
+      // এখানে authService.initiatePayment ব্যবহার করা হলো
       const response: any = await authService.initiatePayment({
         amount: Number(amount),
         purpose,
         studentId,
       });
 
-      // আপনার ব্যাকএন্ডের জেনারেট করা সাকসেস এবং ইউআরএল রেসপন্স হ্যান্ডেলিং
-      if (response?.data?.success && response?.data?.url) {
+      // ব্যাকএন্ড যদি সাকসেসফুলি সেশন ইউআরএল রিটার্ন করে
+      // নোট: ব্যাকএন্ডের রেসপন্স অবজেক্টে যদি সরাসরি 'url' না থাকে, তবে response.data.data.url চেক করুন
+      const redirectUrl = response?.data?.url || response?.data?.data?.gatewayUrl || response?.data?.data;
+
+      if (redirectUrl) {
         toast.success("Redirecting to SSLCommerz Secure Gateway...");
-        window.location.href = response.data.url;
+        // উইন্ডো রিডাইরেকশন ট্রিগার
+        window.location.href = redirectUrl;
       } else {
         toast.error("Failed to fetch gateway deployment session url");
       }
