@@ -7,7 +7,6 @@
 
 // import { toast } from "react-hot-toast";
 
-
 // export const usePayments = () => {
 //   const [payments, setPayments] = useState<any[]>([]);
 //   const [loading, setLoading] = useState<boolean>(true);
@@ -20,13 +19,11 @@
 //     studentId: "",
 //   });
 
-
 //   const fetchPayments = async () => {
 //     try {
 //       setLoading(true);
 
 //       const response: any = await authService.getPayments();
-      
 
 //       if (response?.data?.success && Array.isArray(response?.data?.data)) {
 //         setPayments(response.data.data);
@@ -50,7 +47,6 @@
 
 //     try {
 //       setSubmitting(true);
-      
 
 //       const response: any = await authService.initiatePayment({
 //         amount: Number(amount),
@@ -58,7 +54,6 @@
 //         studentId,
 //       });
 
-     
 //       const redirectUrl = response?.data?.url || response?.data?.data?.gatewayUrl || response?.data?.data;
 
 //       if (redirectUrl) {
@@ -90,7 +85,7 @@
 //     setFormData,
 //     submitting,
 //     handleCreatePayment,
-//     refetchPayments: fetchPayments 
+//     refetchPayments: fetchPayments
 //   };
 // };
 
@@ -116,7 +111,7 @@ export const usePayments = () => {
     try {
       setLoading(true);
       const response: any = await authService.getPayments();
-      
+
       if (response?.data?.success && Array.isArray(response?.data?.data)) {
         setPayments(response.data.data);
       } else if (Array.isArray(response?.data)) {
@@ -129,8 +124,7 @@ export const usePayments = () => {
     }
   };
 
-
-  const handleCreatePayment = async (e: React.FormEvent) => {
+const handleCreatePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     const { amount, purpose, studentId } = formData;
 
@@ -140,34 +134,31 @@ export const usePayments = () => {
 
     try {
       setSubmitting(true);
-      
 
-      const response: any = await authService.initiatePayment({
+      const res = await authService.initiatePayment({
         amount: Number(amount),
         purpose,
         studentId,
       });
 
-   
-      const redirectUrl = response?.data?.url || response?.data?.data?.url || response?.data?.data;
+      const redirectUrl = res?.data?.url || res?.data?.data?.url || res?.url;
 
       if (redirectUrl) {
         toast.success("Redirecting to SSLCommerz Secure Gateway...");
- 
-        window.location.href = redirectUrl;
+   
+        window.location.replace(redirectUrl); 
       } else {
         toast.error("Gateway deployment session URL not found in response");
       }
     } catch (error: any) {
       console.error("Payment error detail:", error);
-      toast.error(
-        error.response?.data?.message || "Internal core server transaction handshake error"
-      );
+  
+      const errorMessage = error?.response?.data?.message || error?.message || "Internal core server transaction handshake error";
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
   };
-
   useEffect(() => {
     fetchPayments();
   }, []);
@@ -181,6 +172,6 @@ export const usePayments = () => {
     setFormData,
     submitting,
     handleCreatePayment,
-    refetchPayments: fetchPayments 
+    refetchPayments: fetchPayments,
   };
 };
