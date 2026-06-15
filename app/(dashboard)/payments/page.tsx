@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { CreditCard, Plus, X, DollarSign, User, ShieldCheck, Calendar, CheckCircle2, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePayments } from "./usePayments";
 
-export default function PaymentLedgerPage() {
+export function PaymentLedgerPage() {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const {
     payments, loading, isModalOpen, setIsModalOpen,
@@ -258,5 +258,16 @@ export default function PaymentLedgerPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+export default function Page() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[#0B0F19]">
+        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <PaymentLedgerPage />
+    </Suspense>
   );
 }
