@@ -90,7 +90,7 @@ export default function StudentDetailsPage() {
       try {
         setLoading(true);
         const res = await authService.getStudentById(id as string);
-        // এপিআই রেসপন্স স্ট্রাকচার অনুযায়ী ডাটা সেট করা
+      
         setStudent(res.data?.data || res.data);
       } catch (error) {
         console.error("Error fetching student profile:", error);

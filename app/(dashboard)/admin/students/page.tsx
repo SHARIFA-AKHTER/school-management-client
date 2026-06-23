@@ -255,7 +255,7 @@ export default function StudentsListPage() {
                   </span>
                 </td>
                 <td className="px-8 py-5 text-right">
-                  {/* [NOTE] আপনার ফোল্ডার পাথ অনুযায়ী /admin/students অথবা সরাসরি /students চেক করে নিন */}
+               
                   <Link href={`/admin/students/${student.id}`} className="text-[#5D4291] dark:text-purple-400 font-bold text-sm hover:underline">
                     View Profile
                   </Link>

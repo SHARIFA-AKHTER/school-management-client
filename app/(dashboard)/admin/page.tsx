@@ -18,17 +18,39 @@ import { authService } from "@/app/services/api.service";
 import Link from "next/link";
 
 export default function AdminDashboard() {
-  const [data, setData] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<{
+    results: any[];
+    students: any[];
+    classes: any[];
+    subjects: any[];
+  }>({
+    results: [],
+    students: [],
+    classes: [],
+    subjects: [],
+  });
+  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchAllDashboardData = async () => {
       try {
         setLoading(true);
-        const res = await authService.getResults();
-        if (res.data?.success) {
-          setData(res.data.data);
-        }
+        
+        const [resultsRes, studentsRes, classesRes, subjectsRes] = await Promise.all([
+          authService.getResults(),
+          authService.getStudents(),
+          authService.getClasses(),
+          authService.getSubjects(),
+        ]);
+
+        setDashboardData({
+          results: resultsRes.data?.success ? resultsRes.data.data : [],
+          students: studentsRes.data?.success ? studentsRes.data.data : [],
+          classes: classesRes.data?.success ? classesRes.data.data : [],
+          subjects: subjectsRes.data?.success ? subjectsRes.data.data : [],
+        });
+
       } catch (err) {
         console.error("Dashboard data fetch error:", err);
       } finally {
@@ -36,7 +58,7 @@ export default function AdminDashboard() {
       }
     };
 
-    fetchDashboardData();
+    fetchAllDashboardData();
   }, []);
 
   if (loading) {
@@ -50,28 +72,28 @@ export default function AdminDashboard() {
   const stats = [
     {
       label: "Total Results",
-      value: data?.length || 0,
+      value: dashboardData.results?.length || 0,
       icon: GraduationCap,
       color: "bg-purple-500",
       trend: "Live",
     },
     {
       label: "Total Students",
-      value: Array.from(new Set(data?.map((r: any) => r.studentId))).length || 0,
+      value: dashboardData.students?.length || 0, 
       icon: Users,
       color: "bg-blue-500",
-      trend: "+5%",
+      trend: "Live",
     },
     {
       label: "Total Classes",
-      value: Array.from(new Set(data?.map((r: any) => r.student?.class))).length || 0,
+      value: dashboardData.classes?.length || 0, 
       icon: School,
       color: "bg-orange-500",
       trend: "Stable",
     },
     {
       label: "Active Subjects",
-      value: Array.from(new Set(data?.map((r: any) => r.subject))).length || 0,
+      value: dashboardData.subjects?.length || 0, 
       icon: BookOpen,
       color: "bg-emerald-500",
       trend: "Updated",
@@ -104,6 +126,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Cards Sections */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <div
@@ -131,7 +154,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-     
+        {/* Recent Exam Results Table */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[40px] p-8 border border-gray-50 dark:border-gray-800 shadow-sm overflow-hidden">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xl font-black text-gray-800 dark:text-white">
@@ -145,7 +168,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="space-y-4">
-            {data?.slice(0, 5).map((result: any) => (
+            {dashboardData.results?.slice(0, 5).map((result: any) => (
               <div
                 key={result.id}
                 className="flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-[24px] transition-all border border-transparent hover:border-gray-100 dark:hover:border-gray-700"
@@ -173,9 +196,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
+            {dashboardData.results?.length === 0 && (
+              <p className="text-sm text-gray-400 text-center py-6">No recent results found.</p>
+            )}
           </div>
         </div>
 
+        {/* Right Panel (Performance & Shortcuts) */}
         <div className="space-y-8">
           <div className="bg-[#5D4291] dark:bg-purple-700 rounded-[40px] p-8 text-white shadow-xl relative overflow-hidden">
             <TrendingUp
@@ -184,7 +211,7 @@ export default function AdminDashboard() {
             />
             <h3 className="text-xl font-bold mb-2">Performance</h3>
             <p className="text-purple-100 text-sm mb-6">
-              Based on your recent {data?.length} entries, the average pass rate
+              Based on your recent {dashboardData.results?.length} entries, the average pass rate
               is high.
             </p>
             <div className="h-2 bg-purple-900/30 rounded-full overflow-hidden">
@@ -198,18 +225,26 @@ export default function AdminDashboard() {
           <div className="bg-white dark:bg-slate-900 rounded-[40px] p-8 border border-gray-50 dark:border-gray-800 shadow-sm">
             <h3 className="text-lg font-black text-gray-800 dark:text-white mb-6">Shortcuts</h3>
             <div className="grid grid-cols-2 gap-4">
-              <button className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all">
-                Add Student
-              </button>
-              <button className="bg-purple-50 dark:bg-purple-900/20 text-[#5D4291] dark:text-purple-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all">
-                Add Result
-              </button>
-              <button className="bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all">
-                Classes
-              </button>
-              <button className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all">
-                Schedules
-              </button>
+              <Link href="/students" className="w-full">
+                <button className="w-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all text-center">
+                  Add Student
+                </button>
+              </Link>
+              <Link href="/results" className="w-full">
+                <button className="w-full bg-purple-50 dark:bg-purple-900/20 text-[#5D4291] dark:text-purple-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all text-center">
+                  Add Result
+                </button>
+              </Link>
+              <Link href="/classes" className="w-full">
+                <button className="w-full bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all text-center">
+                  Classes
+                </button>
+              </Link>
+              <Link href="/schedules" className="w-full">
+                <button className="w-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all text-center">
+                  Schedules
+                </button>
+              </Link>
             </div>
           </div>
         </div>
