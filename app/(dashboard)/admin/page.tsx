@@ -1,4 +1,258 @@
 
+// /* eslint-disable react/no-unescaped-entities */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+// "use client";
+
+// import { useEffect, useState } from "react";
+// import {
+//   Users,
+//   GraduationCap,
+//   School,
+//   BookOpen,
+//   TrendingUp,
+//   Calendar,
+//   ArrowUpRight,
+//   Loader2,
+// } from "lucide-react";
+// import { authService } from "@/app/services/api.service";
+// import Link from "next/link";
+
+// export default function AdminDashboard() {
+//   const [dashboardData, setDashboardData] = useState<{
+//     results: any[];
+//     students: any[];
+//     classes: any[];
+//     subjects: any[];
+//   }>({
+//     results: [],
+//     students: [],
+//     classes: [],
+//     subjects: [],
+//   });
+  
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const fetchAllDashboardData = async () => {
+//       try {
+//         setLoading(true);
+        
+//         const [resultsRes, studentsRes, classesRes, subjectsRes] = await Promise.all([
+//           authService.getResults(),
+//           authService.getStudents(),
+//           authService.getClasses(),
+//           authService.getSubjects(),
+//         ]);
+
+//         setDashboardData({
+//           results: resultsRes.data?.success ? resultsRes.data.data : [],
+//           students: studentsRes.data?.success ? studentsRes.data.data : [],
+//           classes: classesRes.data?.success ? classesRes.data.data : [],
+//           subjects: subjectsRes.data?.success ? subjectsRes.data.data : [],
+//         });
+
+//       } catch (err) {
+//         console.error("Dashboard data fetch error:", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchAllDashboardData();
+//   }, []);
+
+//   if (loading) {
+//     return (
+//       <div className="h-[60vh] flex items-center justify-center">
+//         <Loader2 className="animate-spin text-[#5D4291] dark:text-purple-400" size={40} />
+//       </div>
+//     );
+//   }
+
+//   const stats = [
+//     {
+//       label: "Total Results",
+//       value: dashboardData.results?.length || 0,
+//       icon: GraduationCap,
+//       color: "bg-purple-500",
+//       trend: "Live",
+//     },
+//     {
+//       label: "Total Students",
+//       value: dashboardData.students?.length || 0, 
+//       icon: Users,
+//       color: "bg-blue-500",
+//       trend: "Live",
+//     },
+//     {
+//       label: "Total Classes",
+//       value: dashboardData.classes?.length || 0, 
+//       icon: School,
+//       color: "bg-orange-500",
+//       trend: "Stable",
+//     },
+//     {
+//       label: "Active Subjects",
+//       value: dashboardData.subjects?.length || 0, 
+//       icon: BookOpen,
+//       color: "bg-emerald-500",
+//       trend: "Updated",
+//     },
+//   ];
+
+//   return (
+//     <div className="space-y-8 animate-in fade-in duration-700">
+
+//       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+//         <div>
+//           <h1 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight">
+//             Admin Dashboard
+//           </h1>
+//           <p className="text-gray-500 dark:text-gray-400 font-medium">
+//             Real-time overview of your school's performance.
+//           </p>
+//         </div>
+//         <div className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+//           <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-xl text-[#5D4291] dark:text-purple-400">
+//             <Calendar size={20} />
+//           </div>
+//           <span className="text-sm font-bold text-gray-600 dark:text-gray-300 pr-2">
+//             {new Date().toLocaleDateString("en-US", {
+//               month: "long",
+//               day: "numeric",
+//               year: "numeric",
+//             })}
+//           </span>
+//         </div>
+//       </div>
+
+//       {/* Cards Sections */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+//         {stats.map((stat, index) => (
+//           <div
+//             key={index}
+//             className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-gray-50 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group"
+//           >
+//             <div className="flex justify-between items-start mb-4">
+//               <div className={`${stat.color} p-3 rounded-2xl text-white shadow-lg`}>
+//                 <stat.icon size={24} />
+//               </div>
+//               <span className="text-[10px] font-black bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded-lg text-gray-400 dark:text-gray-500 group-hover:text-[#5D4291]">
+//                 {stat.trend}
+//               </span>
+//             </div>
+//             <div>
+//               <p className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+//                 {stat.label}
+//               </p>
+//               <h3 className="text-3xl font-black text-gray-800 dark:text-white mt-1">
+//                 {stat.value}
+//               </h3>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+//         {/* Recent Exam Results Table */}
+//         <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[40px] p-8 border border-gray-50 dark:border-gray-800 shadow-sm overflow-hidden">
+//           <div className="flex justify-between items-center mb-8">
+//             <h3 className="text-xl font-black text-gray-800 dark:text-white">
+//               Recent Exam Results
+//             </h3>
+//             <Link href="/results">
+//               <button className="text-sm font-bold text-[#5D4291] dark:text-purple-400 hover:underline flex items-center gap-1">
+//                 View All <ArrowUpRight size={16} />
+//               </button>
+//             </Link>
+//           </div>
+
+//           <div className="space-y-4">
+//             {dashboardData.results?.slice(0, 5).map((result: any) => (
+//               <div
+//                 key={result.id}
+//                 className="flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-[24px] transition-all border border-transparent hover:border-gray-100 dark:hover:border-gray-700"
+//               >
+//                 <div className="flex items-center gap-4">
+//                   <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-xs">
+//                     {result.marks >= 40 ? "PASS" : "FAIL"}
+//                   </div>
+//                   <div>
+//                     <p className="font-bold text-gray-800 dark:text-gray-200">
+//                       {result.student?.name}
+//                     </p>
+//                     <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+//                       {result.subject} • Roll: {result.student?.roll || "N/A"}
+//                     </p>
+//                   </div>
+//                 </div>
+//                 <div className="text-right">
+//                   <p className="font-black text-[#5D4291] dark:text-purple-400 text-lg">
+//                     {result.marks}
+//                   </p>
+//                   <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">
+//                     Score
+//                   </p>
+//                 </div>
+//               </div>
+//             ))}
+//             {dashboardData.results?.length === 0 && (
+//               <p className="text-sm text-gray-400 text-center py-6">No recent results found.</p>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* Right Panel (Performance & Shortcuts) */}
+//         <div className="space-y-8">
+//           <div className="bg-[#5D4291] dark:bg-purple-700 rounded-[40px] p-8 text-white shadow-xl relative overflow-hidden">
+//             <TrendingUp
+//               className="absolute -right-4 -bottom-4 text-white/10"
+//               size={120}
+//             />
+//             <h3 className="text-xl font-bold mb-2">Performance</h3>
+//             <p className="text-purple-100 text-sm mb-6">
+//               Based on your recent {dashboardData.results?.length} entries, the average pass rate
+//               is high.
+//             </p>
+//             <div className="h-2 bg-purple-900/30 rounded-full overflow-hidden">
+//               <div className="h-full bg-white w-[75%] rounded-full" />
+//             </div>
+//             <p className="mt-2 text-[10px] font-bold text-purple-200">
+//               75% STUDENT SUCCESS RATE
+//             </p>
+//           </div>
+
+//           <div className="bg-white dark:bg-slate-900 rounded-[40px] p-8 border border-gray-50 dark:border-gray-800 shadow-sm">
+//             <h3 className="text-lg font-black text-gray-800 dark:text-white mb-6">Shortcuts</h3>
+//             <div className="grid grid-cols-2 gap-4">
+//               <Link href="/students" className="w-full">
+//                 <button className="w-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all text-center">
+//                   Add Student
+//                 </button>
+//               </Link>
+//               <Link href="/results" className="w-full">
+//                 <button className="w-full bg-purple-50 dark:bg-purple-900/20 text-[#5D4291] dark:text-purple-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all text-center">
+//                   Add Result
+//                 </button>
+//               </Link>
+//               <Link href="/classes" className="w-full">
+//                 <button className="w-full bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all text-center">
+//                   Classes
+//                 </button>
+//               </Link>
+//               <Link href="/schedules" className="w-full">
+//                 <button className="w-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-3xl font-bold text-xs hover:scale-105 transition-all text-center">
+//                   Schedules
+//                 </button>
+//               </Link>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -13,9 +267,12 @@ import {
   Calendar,
   ArrowUpRight,
   Loader2,
+  BarChart3,
 } from "lucide-react";
 import { authService } from "@/app/services/api.service";
 import Link from "next/link";
+
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function AdminDashboard() {
   const [dashboardData, setDashboardData] = useState<{
@@ -60,6 +317,30 @@ export default function AdminDashboard() {
 
     fetchAllDashboardData();
   }, []);
+
+  const getChartData = () => {
+    if (!dashboardData.results || dashboardData.results.length === 0) return [];
+
+    const subjectMap: { [key: string]: { totalMarks: number; count: number } } = {};
+
+
+    dashboardData.results.forEach((res: any) => {
+      const subjectName = res.subject || "Unknown";
+      if (!subjectMap[subjectName]) {
+        subjectMap[subjectName] = { totalMarks: 0, count: 0 };
+      }
+      subjectMap[subjectName].totalMarks += Number(res.marks) || 0;
+      subjectMap[subjectName].count += 1;
+    });
+
+ 
+    return Object.keys(subjectMap).map((subject) => ({
+      name: subject,
+      "Average Marks": Math.round(subjectMap[subject].totalMarks / subjectMap[subject].count),
+    }));
+  };
+
+  const chartData = getChartData();
 
   if (loading) {
     return (
@@ -151,6 +432,40 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+  
+      <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 md:p-8 border border-gray-50 dark:border-gray-800 shadow-sm">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="p-2 bg-purple-50 dark:bg-purple-950/40 text-[#5D4291] dark:text-purple-400 rounded-xl">
+            <BarChart3 size={20} />
+          </div>
+          <div>
+            <h3 className="text-xl font-black text-gray-800 dark:text-white">Subject Performance Matrix</h3>
+            <p className="text-xs text-gray-400 font-medium">Real-time database average analytics computed across registered exams.</p>
+          </div>
+        </div>
+        
+        <div className="h-[320px] w-full">
+          {chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-gray-100 dark:stroke-gray-800/60" />
+                <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1e293b', borderRadius: '16px', border: 'none', color: '#fff' }}
+                  itemStyle={{ color: '#a78bfa', fontWeight: 'bold' }}
+                />
+                <Bar dataKey="Average Marks" fill="#5D4291" radius={[10, 10, 0, 0]} maxBarSize={50} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex items-center justify-center border border-dashed rounded-2xl dark:border-gray-800 text-gray-400 text-sm">
+              No exam results available to generate analytics chart.
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
